@@ -1,4 +1,4 @@
-# android studio stuff
+# android studio stuff ignore builds
 .idea/
 .gradle
 build
