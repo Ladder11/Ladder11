@@ -8,6 +8,7 @@ import android.util.Log;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
+import com.hoho.android.usbserial.util.HexDump;
 import com.hoho.android.usbserial.util.SerialInputOutputManager;
 
 import java.io.IOException;
@@ -18,6 +19,9 @@ import java.util.concurrent.Executors;
 /**
  * Created by jordanbrobots on 11/19/15.
  */
+
+//#TODO Handle exception on wakeup when phone goes to sleep but arduino is still connected
+    //#TODO Fix having to press reset button on Arduino to make things magically work
 public class ArduinoBridge {
     private Context appContext;
     private String TAG = "ArduinoBridge";
@@ -69,7 +73,7 @@ public class ArduinoBridge {
         try {
             //Connect to the port, and set the UART parameters
             arduinoPort.open(connection);
-            arduinoPort.setParameters(115200, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
+            arduinoPort.setParameters(9600, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
         } catch (IOException e){
             Log.e(TAG, "Error during attempted serial setup: " + e.getMessage(), e);
             //Close the port
@@ -150,6 +154,8 @@ public class ArduinoBridge {
                 public void onNewData(final byte[] data) {
                     //Do something when new data is received
                     //Add the data to a queue for parsing, and log the data in the log file
+                    Log.d(TAG, "Packet Received at: "+System.currentTimeMillis());
+                    Log.d(TAG, "Received: ("+data.length+"): "+ HexDump.dumpHexString(data));
                 }
             };
 
@@ -173,6 +179,7 @@ public class ArduinoBridge {
             public void run() {
                 byte[] dataValues = { data };
                 try {
+                    Log.d(TAG, "Packet Sent at: "+System.currentTimeMillis());
                     arduinoPort.write(dataValues, 250);
                 } catch (IOException e) {
                     Log.e(TAG, "SendByte exception: "+e.getMessage(), e);
@@ -195,6 +202,7 @@ public class ArduinoBridge {
         Thread thread = new Thread() {
             public void run() {
                 try {
+                    Log.d(TAG, "Packet Sent at: "+System.currentTimeMillis());
                     arduinoPort.write(data, 250);
                 } catch (IOException e) {
                     Log.e(TAG, "Send Bytes exception: "+e.getMessage(), e);
