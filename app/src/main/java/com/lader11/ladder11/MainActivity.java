@@ -37,21 +37,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void sendSyncMsg(View v) {
-        packetNum++;
-        int command = 0;
-        byte[] packet = {   (byte) 0xFF,        //Start Byte
-                            (byte) 7,           //Size
-                            (byte) (packetNum>>8),
-                            (byte) packetNum,
-                            (byte) (command>>8),
-                            (byte) command,
-                            (byte) (0xFF+7+(packetNum>>8)+(packetNum&0xFF)+(command>>8)+(command&0xFF))};
-        Log.d(TAG, "Sending Packet (" + packet.length + "): " + HexDump.toHexString(packet));
-        arduinoBridge.sendBytes(packet);
-        packet = myLinx.buildPacket(0);
-        Log.d(TAG, "Built Packet ("+packet.length+"): "+HexDump.toHexString(packet));
-        int[] test = {0,0,0};
-        packet = myLinx.buildPacket(0, test);
-        Log.d(TAG, "Built Packet ("+packet.length+"): "+HexDump.toHexString(packet));
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "Hello world");
+                try { Thread.sleep(1000); }
+                catch (InterruptedException e) {}
+                Log.d(TAG, "This is a test");
+            }
+        }).start();
     }
 }
