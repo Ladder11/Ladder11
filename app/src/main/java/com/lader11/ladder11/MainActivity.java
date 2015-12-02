@@ -12,6 +12,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ArduinoBridge arduinoBridge;
     private int packetNum = 0;
+    private LinxSerialDevice myLinx;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         arduinoBridge = new ArduinoBridge(this);
+        myLinx = new LinxSerialDevice();
     }
 
     @Override
@@ -44,7 +46,12 @@ public class MainActivity extends AppCompatActivity {
                             (byte) (command>>8),
                             (byte) command,
                             (byte) (0xFF+7+(packetNum>>8)+(packetNum&0xFF)+(command>>8)+(command&0xFF))};
-        Log.d(TAG, "Sending Packet ("+packet.length+"): "+HexDump.toHexString(packet));
+        Log.d(TAG, "Sending Packet (" + packet.length + "): " + HexDump.toHexString(packet));
         arduinoBridge.sendBytes(packet);
+        packet = myLinx.buildPacket(0);
+        Log.d(TAG, "Built Packet ("+packet.length+"): "+HexDump.toHexString(packet));
+        int[] test = {0,0,0};
+        packet = myLinx.buildPacket(0, test);
+        Log.d(TAG, "Built Packet ("+packet.length+"): "+HexDump.toHexString(packet));
     }
 }
