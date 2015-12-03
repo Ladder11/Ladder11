@@ -137,7 +137,7 @@ public class ArduinoBridge {
      */
     private void restartIOManager() {
         stopIoManager();
-        startIOManager();
+        //startIOManager();     //#TODO Temporarily disables event notification
     }
 
     /**
@@ -169,7 +169,7 @@ public class ArduinoBridge {
     /**
      * Send a byte by starting a new thread
      */
-    public void sendByte(final byte data) {
+    public void sendByteAsync(final byte data) {
         //Do nothing if the arduino is not connected
         if(arduinoPort == null) {
             return;
@@ -193,7 +193,7 @@ public class ArduinoBridge {
     /**
      * Send a byte array by starting a new thread
      */
-    public void sendBytes(final byte[] data) {
+    public void sendBytesAsync(final byte[] data) {
         //Do nothing if the arduino is not connected
         if(arduinoPort == null) {
             return;
@@ -213,4 +213,36 @@ public class ArduinoBridge {
         return;
     }
 
+    /**
+     * Send a byte array in place
+     */
+    public void sendBytes(byte[] data) {
+        //Do nothing if the arduino is not connected
+        if(arduinoPort == null) {
+            return;
+        }
+
+        try {
+            arduinoPort.write(data, 250);
+        } catch (IOException e) {
+            Log.e(TAG, "Sending byte exception: "+e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Read bytes into a buffer array in place
+     */
+    public int readBytes(byte[] buff, int timeout) {
+        //Do nothing if the arduino is not connected
+        if(arduinoPort == null) {
+            return 0;
+        }
+        int val = 0;
+        try {
+            val = arduinoPort.read(buff, timeout);
+        } catch (IOException e) {
+            Log.e(TAG, "Reading byte exception: "+e.getMessage(), e);
+        }
+        return val;
+    }
 }
