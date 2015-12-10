@@ -9,6 +9,8 @@ import android.os.ParcelUuid;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private static String address = "00:00:00:00:00:00";
 
     private TextView textView;
+    private Button connectButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         textView = (TextView) findViewById(R.id.textView);
         textView.setText("");
+        connectButton = (Button) findViewById(R.id.button);
+        connectButton.setEnabled(false);
         startBluetooth();
     }
 
@@ -56,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
             case REQUEST_ENABLE_BT:
                 if(resultCode == RESULT_OK) {
                     Toast.makeText(this, "Bluetooth Enabled", Toast.LENGTH_SHORT).show();
+                    connectButton.setEnabled(true);
                 } else {
                     Toast.makeText(this, "Bluetooth denied", Toast.LENGTH_SHORT).show();
                 }
@@ -88,10 +94,15 @@ public class MainActivity extends AppCompatActivity {
             //Bluetooth adapter is not currently enabled, prompt the user to start it
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+        } else {
+            //enable the connect button
+            connectButton.setEnabled(true);
         }
 
         //#TODO handle bluetooth on/off events with broadcast receivers
+    }
 
+    public void connectToRobot(View view) {
         //Get the list of already paired devices
         Set<BluetoothDevice> pairedDevices = btAdapter.getBondedDevices();
         //If there are devices paired, print them out
@@ -107,16 +118,12 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-
-        //#TODO only start the thread if the robot is available
-        //Start the connection listener thread to allow a device to connect
-        //robotBluetooth.create
     }
 
     public void connectToDevice(String address) {
         this.address = address;
         Log.d(TAG, "Attempting to connect to: "+address);
-        Toast.makeText(this, "Connecting to: "+address, Toast.LENGTH_SHORT);
+        //Toast.makeText(this, "Connecting to: "+address, Toast.LENGTH_SHORT);
 
         //Attempt a connection
         try {
@@ -148,6 +155,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             Log.e(TAG, "Unable to get input and output streams: "+e.getMessage(), e);
         }
+        Toast.makeText(this, "Connected to Robot", Toast.LENGTH_SHORT);
     }
 
     Thread readThread = new Thread(new Runnable() {
