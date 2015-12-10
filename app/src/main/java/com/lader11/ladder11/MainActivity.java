@@ -162,13 +162,13 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
             try {
                 while(true) {
-                    int data = inStream.read();
+                    final int data = inStream.read();
                     if(data != -1) {
-                        final byte[] character = new byte[1];
-                        character[0] = (byte) data;
+                        //final byte[] character = new byte[1];
+                        //character[0] = (byte) data;
                         textView.post(new Runnable() {
                             public void run() {
-                                textView.setText(textView.getText()+new String(character));
+                                textView.setText(textView.getText()+" "+data);
                             }
                         });
                     }
