@@ -20,15 +20,12 @@ import java.io.OutputStream;
 import java.util.Set;
 import java.util.UUID;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements TelemetryUpdates{
     private String TAG = "Ladder11MainActivity";
 
     //Bluetooth Objects
     private BluetoothAdapter btAdapter = null;
-    private BluetoothDevice robotBtDev = null;
-    private BluetoothSocket btSocket = null;
-    private OutputStream outStream = null;
-    private InputStream inStream = null;
+    private RobotTelemetry robotTelemetry;
 
     //Bluetooth Intent Request codes
     private static final int REQUEST_ENABLE_BT = 1;
@@ -51,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
         textView.setText("");
         connectButton = (Button) findViewById(R.id.button);
         connectButton.setEnabled(false);
+        robotTelemetry = new RobotTelemetry();
+        robotTelemetry.registerListener(this);
         startBluetooth();
     }
 
@@ -112,176 +111,59 @@ public class MainActivity extends AppCompatActivity {
                 //Toast.makeText(this, "Paired to: "+device.getName()+"/n"+device.getAddress(), Toast.LENGTH_SHORT).show();
                 if(device.getName().equals("BT_01")) {
                     Toast.makeText(this, "Found robot", Toast.LENGTH_SHORT).show();
-                    robotBtDev = device;
                     //Attempt a connection only when the device is found;
-                    connectToDevice(robotBtDev.getAddress());
+                    robotTelemetry.connectToDevice(device);
                 }
             }
         }
     }
 
-    public void connectToDevice(String address) {
-        this.address = address;
-        Log.d(TAG, "Attempting to connect to: " + address);
-        //Toast.makeText(this, "Connecting to: "+address, Toast.LENGTH_SHORT);
 
-        //Attempt a connection
-        try {
-            btSocket = robotBtDev.createRfcommSocketToServiceRecord(myUUID);
-        } catch (IOException e) {
-            Log.e(TAG, "Error on attempt to create socket: "+e.getMessage(), e);
-        }
-
-        //Shutdown any discovery services since we are connecting, and discovery is resource intensive
-        btAdapter.cancelDiscovery();
-
-        //Establish the connection (connect blocks until successful connect)
-        try {
-            btSocket.connect();
-        } catch (IOException e) {
-            Log.e(TAG, "Unable to connect to the socket");
-            try {
-                btSocket.close();
-            } catch (IOException e2)  {
-                Log.e(TAG, "Unable to close the socket during connection failure");
-            }
-        }
-
-        //Create the data streams to start communicating with the device
-        try {
-            outStream = btSocket.getOutputStream();
-            inStream = btSocket.getInputStream();
-            readThread.start();
-        } catch (IOException e) {
-            Log.e(TAG, "Unable to get input and output streams: "+e.getMessage(), e);
-        }
-        Toast.makeText(this, "Connected to Robot", Toast.LENGTH_SHORT);
+    @Override
+    public void onRobotPoseUpdate(float x, float y, float theta) {
+        addToTextView("Robot pose X: "+x+" Y: "+y+" Theta: "+theta);
     }
 
-    public void processPacket(final byte[] packet) {
-        //Disregard the packet if it does not have a valid checksum
-        if(validChecksum(packet)) {
-            switch(packet[2]) {
-                case TelemetryConstants.COMMAND_START:
-                    break;
-                case TelemetryConstants.COMMAND_STOP:
-                    break;
-                case TelemetryConstants.COMMAND_ROBOT_POSE:
-                    //Reconstruct the data
-                    int xint, yint, thetaint;
-                    xint = ((int) packet[3]) << 8;
-                    xint |= ((int) packet[4]) & 0xFF;
-                    yint = ((int) packet[6]) << 8;
-                    yint |= ((int) packet[7]) & 0xFF;
-                    thetaint = ((int) packet[9]) << 8;
-                    thetaint |= ((int) packet[10]) & 0xFF;
-
-                    int xdec, ydec, thetadec;
-                    xdec = ((int) packet[5]) & 0xFF;
-                    ydec = ((int) packet[8]) & 0xFF;
-                    thetadec = ((int) packet[11]) & 0xFF;
-
-                    /*
-                    float x, y, theta;
-                    x = ((float) xint) + (((float) xdec)/100);
-                    y = ((float) yint) + (((float) ydec)/100);
-                    theta = ((float) thetaint) + (((float) thetadec)/100); */
-                    Float x = new Float(xint + "."+ xdec);
-                    Float y = new Float(yint + "."+ ydec);
-                    Float theta = new Float(thetaint + "." + thetadec);
-
-                    final String printStr = "Read RobotPose X: "+x+" Y: "+y+" Theta: "+theta;
-                    Log.d(TAG, printStr);
-                    textView.post(new Runnable() {
-                        public void run() {
-                            textView.setText(textView.getText()+printStr+"\n");
-                        }
-                    });
-                    break;
-                case TelemetryConstants.COMMAND_FLAME_LOCATION:
-                    break;
-                case TelemetryConstants.COMMAND_CAMERA_DATA:
-                    break;
-                case TelemetryConstants.COMMAND_BATT_VOLT:
-                    break;
-                default:
-                    Log.d(TAG, "Received unknown packet type");
-            }
-        } else {
-            Log.d(TAG, "Packet had bad checksum");
-        }
+    @Override
+    public void onFlameLocationUpdate(float x, float y, float z) {
+        addToTextView("Flame Location X: "+x+" Y: "+y+" Z: "+z);
     }
 
-    public boolean validChecksum(final byte[] packet) {
-        byte sum = 0;
-        for(int i=0; i<(packet.length-1); i++) {
-            //Upcast and bitmask
-            sum += packet[i] & 0xFF;
-        }
-        return (packet[packet.length-1] == sum);
+    @Override
+    public void onCameraDataUpdate(int x, int y, byte size) {
+        addToTextView("Camera Data X: "+x+" Y: "+y+" Size: "+size);
     }
 
-    Thread readThread = new Thread(new Runnable() {
-        public void run() {
-            try {
-                while(true) {
-                    if(inStream.available() >= 2) {
-                        Log.d(TAG, "Starting to read in packet");
-                        //Check the start byte;
-                        if(inStream.read() != 0xFF) {
-                            Log.d(TAG, "Not a start byte");
-                            continue;
-                        }
-                        //Read and check the length byte
-                        int length = inStream.read();
-                        if(length < 4) {
-                            Log.d(TAG, "Bad length byte: "+length);
-                            continue;
-                        }
-                        final byte [] packet = new byte[length];
-                        packet[0] = (byte) 0xFF;
-                        packet[1] = (byte) length;
-                        //Wait for the rest of the packet
-                        while(inStream.available() < (length - 2)) {}
-                        //Read in the rest of the bytes into the packet
-                        inStream.read(packet, 2, length-2);
+    @Override
+    public void onRobotBatteryUpdate(float voltage) {
+        addToTextView("Battery Voltage: "+voltage+" Volts");
+    }
 
-                        //Show the received data
-                        textView.post(new Runnable() {
-                            public void run() {
-                                String dataString = "{";
-                                for (int i = 0; i < packet.length; i++) {
-                                    dataString += packet[i] & 0xFF;
-                                    dataString += ",";
-                                }
-                                dataString += "}";
-                                textView.setText(textView.getText() + "Read: " + dataString + "\n");
-                                if (validChecksum(packet)) {
-                                    textView.setText(textView.getText() + "Valid Checksum\n");
-                                } else {
-                                    textView.setText(textView.getText() + "Invalid Checksum\n");
-                                }
-                            }
-                        });
+    @Override
+    public void onGyroDataUpdate(float theta) {
+        addToTextView("Gyro Z: "+theta);
+    }
 
+    @Override
+    public void onStatusUpdate(byte status, byte substatus) {
+        addToTextView("Status "+status+":"+substatus);
+    }
 
-                        //Process the packet
-                        processPacket(packet);
-                    }
-                    /*final int data = inStream.read();
-                    if(data != -1) {
-                        //final byte[] character = new byte[1];
-                        //character[0] = (byte) data;
-                        textView.post(new Runnable() {
-                            public void run() {
-                                textView.setText(textView.getText()+" "+data);
-                            }
-                        });
-                    }*/
-                }
-            } catch (IOException e) {
-                Log.e(TAG+" ReadThread", "Unhandled Read exception: "+e.getMessage(), e);
+    @Override
+    public void onRunningUpdate() {
+        addToTextView("Robot is Running");
+    }
+
+    @Override
+    public void onStoppedUpdate() {
+        addToTextView("Robot is Stopped");
+    }
+
+    public void addToTextView(final String st) {
+        textView.post(new Runnable() {
+            public void run() {
+                textView.setText(textView.getText()+st+"\n");
             }
-        }
-    });
+        });
+    }
 }
