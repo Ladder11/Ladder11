@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.ParcelUuid;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
@@ -40,6 +42,8 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates{
     private TextView textView;
     private Button connectButton;
 
+    private TextToSpeech tts;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,8 +52,19 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates{
         textView.setText("");
         connectButton = (Button) findViewById(R.id.button);
         connectButton.setEnabled(false);
+
         robotTelemetry = new RobotTelemetry();
         robotTelemetry.registerListener(this);
+
+        tts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if(status != TextToSpeech.ERROR) {
+                    tts.setLanguage(Locale.US);
+                }
+            }
+        });
+
         startBluetooth();
     }
 
@@ -76,6 +91,10 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates{
 
     @Override
     protected void onPause() {
+        if(tts != null) {
+            tts.stop();
+            tts.shutdown();
+        }
         super.onPause();
     }
 
@@ -127,6 +146,9 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates{
     @Override
     public void onFlameLocationUpdate(float x, float y, float z) {
         addToTextView("Flame Location X: "+x+" Y: "+y+" Z: "+z);
+        String st = "The flame is located at "+x+" inches in the x direction, "+
+                     y+" inches in the y direction, and "+z+" inches from the ground.";
+        tts.speak(st, TextToSpeech.QUEUE_FLUSH, null);
     }
 
     @Override
