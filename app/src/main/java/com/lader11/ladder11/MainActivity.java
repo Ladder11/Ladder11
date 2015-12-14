@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates{
     private TextView textView;
     private Button connectButton;
     private Button startButton;
+    private Button stopButton;
 
     private TextToSpeech tts;
 
@@ -49,6 +50,8 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates{
         connectButton.setEnabled(false);
         startButton = (Button) findViewById(R.id.startButton);
         startButton.setEnabled(false);
+        stopButton = (Button) findViewById(R.id.stopButton);
+        stopButton.setEnabled(false);
 
         robotTelemetry = new RobotTelemetry();
         robotTelemetry.registerListener(this);
@@ -139,11 +142,26 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates{
      */
     public void onSuccessfulConnect() {
         startButton.setEnabled(true);
+        stopButton.setEnabled(true);
     }
 
+    /**
+     * Sends a start message to the robot when the start button is pressed
+     * @param view
+     */
     public void sendRobotStart(View view) {
         if(robotTelemetry != null) {
             robotTelemetry.sendStartAsync();
+        }
+    }
+
+    /**
+     * Send a stop message to the robot when the stop button is pressed
+     * @param view
+     */
+    public void sendRobotStop(View view) {
+        if(robotTelemetry != null) {
+            robotTelemetry.sendStopAsync();
         }
     }
 
