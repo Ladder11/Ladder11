@@ -73,6 +73,9 @@ public class RobotTelemetry {
             outStream = btSocket.getOutputStream();
             inStream = btSocket.getInputStream();
             readThread.start();
+            for(TelemetryUpdates item: listeners) {
+                item.onSuccessfulConnect();
+            }
         } catch (IOException e) {
             Log.e(TAG, "Unable to get input and output streams: "+e.getMessage(), e);
         }
@@ -216,11 +219,60 @@ public class RobotTelemetry {
     }
 
     public boolean validChecksum(final byte[] packet) {
+        return (packet[packet.length-1] == calcChecksum(packet));
+    }
+
+    public byte calcChecksum(final byte[] packet) {
         byte sum = 0;
-        for(int i=0; i<(packet.length-1); i++) {
-            //Upcast and bitmask
+        for (int i = 0; i < (packet.length - 1); i++) {
             sum += packet[i] & 0xFF;
         }
-        return (packet[packet.length-1] == sum);
+        return sum;
+    }
+
+    /** Sends a start message to the robot
+     */
+    public void sendStartAsync() {
+        if(outStream == null) {
+            return;     //Not connected, just ignore it
+        }
+        new Thread( new Runnable() {
+            public void run() {
+                byte[] packet = new byte[TelemetryConstants.LEN_START];
+                packet[0] = TelemetryConstants.START_BYTE;
+                packet[1] = TelemetryConstants.LEN_START;
+                packet[2] = TelemetryConstants.COMMAND_START;
+                packet[3] = calcChecksum(packet);
+                try {
+                    Log.d(TAG, "Sending Start Packet");
+                    outStream.write(packet);
+                } catch (IOException e) {
+                    Log.e(TAG, "Couldn't send Start packet: "+e.getMessage(), e);
+                }
+            }
+        }).start();
+    }
+
+    /** Sends a stop message to the robot
+     */
+    public void sendStopAsync() {
+        if(outStream == null) {
+            return;     //Not connected, just ignore it
+        }
+        new Thread( new Runnable() {
+            public void run() {
+                byte[] packet = new byte[TelemetryConstants.LEN_STOP];
+                packet[0] = TelemetryConstants.START_BYTE;
+                packet[1] = TelemetryConstants.LEN_STOP;
+                packet[2] = TelemetryConstants.COMMAND_STOP;
+                packet[3] = calcChecksum(packet);
+                try {
+                    Log.d(TAG, "Sending Stop packet");
+                    outStream.write(packet);
+                } catch (IOException e) {
+                    Log.e(TAG, "Couldn't send Stop packet");
+                }
+            }
+        }).start();
     }
 }
