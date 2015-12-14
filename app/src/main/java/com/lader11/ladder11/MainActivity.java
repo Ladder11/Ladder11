@@ -1,11 +1,8 @@
 package com.lader11.ladder11;
 
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
-import android.os.ParcelUuid;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
@@ -15,9 +12,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
@@ -41,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates{
 
     private TextView textView;
     private Button connectButton;
+    private Button startButton;
 
     private TextToSpeech tts;
 
@@ -50,8 +45,10 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates{
         setContentView(R.layout.activity_main);
         textView = (TextView) findViewById(R.id.textView);
         textView.setText("");
-        connectButton = (Button) findViewById(R.id.button);
+        connectButton = (Button) findViewById(R.id.connectButton);
         connectButton.setEnabled(false);
+        startButton = (Button) findViewById(R.id.startButton);
+        startButton.setEnabled(false);
 
         robotTelemetry = new RobotTelemetry();
         robotTelemetry.registerListener(this);
@@ -137,6 +134,18 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates{
         }
     }
 
+    /**
+     * Only enable robot communication buttons when the robot has succesfully connected
+     */
+    public void onSuccessfulConnect() {
+        startButton.setEnabled(true);
+    }
+
+    public void sendRobotStart(View view) {
+        if(robotTelemetry != null) {
+            robotTelemetry.sendStartAsync();
+        }
+    }
 
     @Override
     public void onRobotPoseUpdate(float x, float y, float theta) {
@@ -145,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates{
 
     @Override
     public void onFlameLocationUpdate(float x, float y, float z) {
-        addToTextView("Flame Location X: "+x+" Y: "+y+" Z: "+z);
+        addToTextView("Flame Location X: " + x + " Y: " + y + " Z: " + z);
         String st = "The flame is located at "+x+" inches in the x direction, "+
                      y+" inches in the y direction, and "+z+" inches from the ground.";
         tts.speak(st, TextToSpeech.QUEUE_FLUSH, null);
