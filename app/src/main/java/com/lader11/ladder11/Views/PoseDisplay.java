@@ -12,6 +12,10 @@ import com.lader11.ladder11.R;
 /**
  * Created by jordanbrobots on 12/14/15.
  */
+//#TODO make things look a little nicer
+//#TODO make the text fit inside the circle
+//#TODO change the circle to an outline
+//#TODO change the gyro bubble to outline, and layer on top
 public class PoseDisplay extends View {
     private Paint mTextPaint;
     private Paint mCirclePaint;
