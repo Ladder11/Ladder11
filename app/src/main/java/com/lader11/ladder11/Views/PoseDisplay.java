@@ -154,14 +154,14 @@ public class PoseDisplay extends View {
 
     public void setGyroHeading(float heading) {
         gyroHead = heading;
-        labelGyroText = String.format("Gyro: %f.2\u00b0", gyroHead);
+        labelGyroText = String.format("Gyro: %.2f\u00b0", gyroHead);
         calculateBubblePositions();
         invalidate();
     }
 
     public void setOdometryHeading(float heading) {
         odoHead = heading;
-        labelOdoText = String.format("Head: %f.2\u00b0", odoHead);
+        labelOdoText = String.format("Head: %.2f\u00b0", odoHead);
         calculateBubblePositions();
         invalidate();
     }
@@ -169,8 +169,8 @@ public class PoseDisplay extends View {
     public void setHeadings(float odometryHeading, float gyroHeading) {
         odoHead = odometryHeading;
         gyroHead = gyroHeading;
-        labelOdoText = String.format("Head: %f.2\u00b0", odoHead);
-        labelGyroText = String.format("Gyro: %f.2\u00b0", gyroHead);
+        labelOdoText = String.format("Head: %.2f\u00b0", odoHead);
+        labelGyroText = String.format("Gyro: %.2f\u00b0", gyroHead);
         calculateBubblePositions();
         invalidate();
     }
@@ -178,8 +178,8 @@ public class PoseDisplay extends View {
     public void setPosition(float x, float y) {
         xPos = x;
         yPos = y;
-        labelXText = String.format("X: %f.2\"", xPos);
-        labelYText = String.format("Y: %f.2\"", yPos);
+        labelXText = String.format("X: %.2f\"", xPos);
+        labelYText = String.format("Y: %.2f\"", yPos);
         invalidate();
     }
 
@@ -187,11 +187,10 @@ public class PoseDisplay extends View {
         xPos = x;
         yPos = y;
         odoHead = odometryHeading;
-        labelXText = String.format("X: %f.2\"", xPos);
-        labelYText = String.format("Y: %f.2\"", yPos);
-        labelOdoText = String.format("Head: %f.2\u00b0", odoHead);
+        labelXText = String.format("X: %.2f\"", xPos);
+        labelYText = String.format("Y: %.2f\"", yPos);
+        labelOdoText = String.format("Head: %.2f\u00b0", odoHead);
         calculateBubblePositions();
-        //labelText = x+", "+y;
         invalidate();
     }
 
