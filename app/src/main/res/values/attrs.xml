@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="PoseDisplay">
+        <attr name="circleColor" format="color" />
+        <attr name="textColor" format="color" />
+        <attr name= "circleLabel" format="string" />
+    </declare-styleable>
+</resources>
