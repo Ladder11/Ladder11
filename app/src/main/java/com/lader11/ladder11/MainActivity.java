@@ -12,6 +12,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.lader11.ladder11.Views.PoseDisplay;
+
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
@@ -40,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates 
     private Button startButton;
     private Button stopButton;
     private TextView statusText;
+    private PoseDisplay poseDisplay;
 
     private TextToSpeech tts;
 
@@ -56,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates 
         stopButton = (Button) findViewById(R.id.stopButton);
         stopButton.setEnabled(false);
         statusText = (TextView) findViewById(R.id.textStatus);
+        poseDisplay = (PoseDisplay) findViewById(R.id.myPose);
 
         robotTelemetry = new RobotTelemetry();
         robotTelemetry.registerListener(this);
@@ -173,8 +177,14 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates 
     }
 
     @Override
-    public void onRobotPoseUpdate(float x, float y, float theta) {
-        addToTextView("Robot pose X: "+x+" Y: "+y+" Theta: "+theta);
+    public void onRobotPoseUpdate(final float x, final float y, final float theta) {
+        //addToTextView("Robot pose X: "+x+" Y: "+y+" Theta: "+theta);
+        Log.d(TAG, "Gyro Heading: "+(theta * -180.0 / Math.PI)+ "deg. Rad: "+theta);
+        poseDisplay.post(new Runnable() {
+            public void run() {
+                poseDisplay.setRobotPose(x, y, (float) (theta * -180.0 / Math.PI));
+            }
+        });
     }
 
     @Override
@@ -192,12 +202,18 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates 
 
     @Override
     public void onRobotBatteryUpdate(float voltage) {
-        addToTextView("Battery Voltage: "+voltage+" Volts");
+        addToTextView("Battery Voltage: " + voltage + " Volts");
     }
 
     @Override
-    public void onGyroDataUpdate(float theta) {
-        addToTextView("Gyro Z: "+theta);
+    public void onGyroDataUpdate(final float theta) {
+        //addToTextView("Gyro Z: "+theta);
+        poseDisplay.post(new Runnable() {
+            public void run() {
+                poseDisplay.setGyroHeading(theta);
+            }
+        });
+
     }
 
     @Override
@@ -207,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates 
         final byte fsubstatus = substatus;
         statusText.post(new Runnable() {
             public void run() {
-                statusText.setText("Status: "+fstatus+": "+fsubstatus);
+                statusText.setText("Status: " + fstatus + ": " + fsubstatus);
             }
         });
     }
@@ -225,7 +241,7 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates 
     public void addToTextView(final String st) {
         textView.post(new Runnable() {
             public void run() {
-                textView.setText(textView.getText()+st+"\n");
+                textView.setText(st+"\n"+textView.getText());
             }
         });
     }
