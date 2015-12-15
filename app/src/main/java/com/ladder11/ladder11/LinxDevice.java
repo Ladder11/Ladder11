@@ -1,4 +1,4 @@
-package com.lader11.ladder11;
+package com.ladder11.ladder11;
 
 /**
  * Abstraction for any device running the LINX firmware
