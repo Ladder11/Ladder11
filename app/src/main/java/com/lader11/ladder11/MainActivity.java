@@ -19,7 +19,6 @@ import java.util.Set;
 import java.util.UUID;
 
 //#TODO add a disconnect button
-//#TODO fix functionality for the text to speech so that it doesn't break onPause/onResume
 public class MainActivity extends AppCompatActivity implements TelemetryUpdates {
     private String TAG = "Ladder11MainActivity";
 
