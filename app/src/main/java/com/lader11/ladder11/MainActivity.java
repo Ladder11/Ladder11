@@ -148,7 +148,6 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates 
                 Log.d(TAG, "Device: "+device.getName()+" Address: "+device.getAddress());
                 //Search for the robot by bluetooth name
                 if(device.getName().equals("BT_01")) {
-                    Toast.makeText(this, "Found robot", Toast.LENGTH_SHORT).show();
                     //Attempt a connection only when the device is found;
                     final BluetoothDevice dev = device;
                     new Thread(new Runnable() {
