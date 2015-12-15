@@ -43,6 +43,10 @@ public class RobotTelemetry {
     public void connectToDevice(BluetoothDevice btDevice) {
         if(btDevice == null) {
             Log.e(TAG, "Cannot connect to a null device");
+            //Notify listeners of a failed connection
+            for(TelemetryUpdates item: listeners) {
+                item.onFailedConnect();
+            }
             return;
         }
         robotbtDevice = btDevice;
@@ -54,6 +58,11 @@ public class RobotTelemetry {
             btSocket =robotbtDevice.createRfcommSocketToServiceRecord(myUUID);
         } catch (IOException e) {
             Log.e(TAG, "Error on attempt to create socket: "+e.getMessage(), e);
+            //Notify listeners of a failed connection
+            for(TelemetryUpdates item: listeners) {
+                item.onFailedConnect();
+            }
+            return;
         }
 
         //Establish the connection (connect blocks until successful connect)
@@ -67,6 +76,10 @@ public class RobotTelemetry {
                 Log.e(TAG, "Unable to close the socket during connection failure");
                 return;
             }
+            //Notify listeners of a failed connection
+            for(TelemetryUpdates item: listeners) {
+                item.onFailedConnect();
+            }
             return;
         }
 
@@ -76,6 +89,10 @@ public class RobotTelemetry {
             inStream = btSocket.getInputStream();
         } catch (IOException e) {
             Log.e(TAG, "Unable to get input and output streams: "+e.getMessage(), e);
+            //Notify listeners of a failed connection
+            for(TelemetryUpdates item: listeners) {
+                item.onFailedConnect();
+            }
             return;
         }
 
