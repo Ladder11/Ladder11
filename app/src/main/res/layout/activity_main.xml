@@ -54,14 +54,17 @@
         android:layout_alignParentEnd="true"
         android:onClick="sendRobotStop" />
 
-    <com.ladder11.ladder11.Views.PoseDisplay
+    <com.lader11.ladder11.Views.PoseDisplay
         android:id="@+id/myPose"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_margin="10dp"
-        custom:circleColor="@color/colorPrimary"
+        android:layout_below="@+id/stopButton"
+        custom:circleColor="@color/colorPrimaryDark"
         custom:textColor="@color/primaryText"
         custom:circleLabel="Hello"
+        custom:odoBubbleColor="@color/colorPrimary"
+        custom:gyroBubbleColor="@color/success"
         />
 
 
