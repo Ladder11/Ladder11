@@ -60,6 +60,8 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates 
         stopButton.setEnabled(false);
         statusText = (TextView) findViewById(R.id.textStatus);
         poseDisplay = (PoseDisplay) findViewById(R.id.myPose);
+        //Disables hardware acceleration for the pose display
+        poseDisplay.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 
         robotTelemetry = new RobotTelemetry();
         robotTelemetry.registerListener(this);
