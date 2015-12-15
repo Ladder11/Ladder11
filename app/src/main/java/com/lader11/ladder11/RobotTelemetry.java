@@ -1,4 +1,4 @@
-package com.ladder11.ladder11;
+package com.lader11.ladder11;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -13,6 +13,7 @@ import java.util.UUID;
 
 /**
  * Created by jordanbrobots on 12/12/15.
+ * #TODO Find a way to safely disconnect
  */
 public class RobotTelemetry {
     private final String TAG = "RobotTelemetry";

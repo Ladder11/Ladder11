@@ -36,9 +36,13 @@ public class PoseDisplay extends View {
     private Paint mCirclePaint;
     private Paint mHeadingPaint;
 
-    private int circleColor,
-                labelColor;
-    private String labelText;
+    private int circleColor = 0xFF0000;     //Default to red
+    private int labelColor = 0x000000;      //Default to black
+    private String labelText = "";  //Default to empty
+
+    int viewWidthHalf;
+    int viewHeightHalf;
+    int radius;
 
 
     public PoseDisplay(Context context) {
@@ -69,34 +73,37 @@ public class PoseDisplay extends View {
         mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mCirclePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mHeadingPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+        //Set the attributes for the text
+        mTextPaint.setColor(labelColor);
+        mTextPaint.setTextAlign(Paint.Align.CENTER);
+        mTextPaint.setTextSize(50);
+
+        //Set the attributes for the circle
+        mCirclePaint.setStyle(Paint.Style.FILL);
+        //Set the paint color to the specified color
+        mCirclePaint.setColor(circleColor);
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
-        //#TODO bad idea... but it works...
-        int viewWidthHalf = this.getMeasuredWidth()/2;
-        int viewHeightHalf = this.getMeasuredHeight()/2;
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        viewWidthHalf = this.getMeasuredWidth()/2;
+        viewHeightHalf = this.getMeasuredHeight()/2;
 
-        int radius = 0;
+        radius = 0;
         if(viewWidthHalf > viewHeightHalf) {
             radius = viewHeightHalf-10;
         } else {
             radius = viewWidthHalf-10;
         }
+    }
 
-        //#TODO again... bad doggy
-        mCirclePaint.setStyle(Paint.Style.FILL);
-        mCirclePaint.setAntiAlias(true);
-        //Set the paint color to the specified color
-        mCirclePaint.setColor(circleColor);
+    @Override
+    protected void onDraw(Canvas canvas) {
+
 
         //Draw the circle!
         canvas.drawCircle(viewWidthHalf, viewHeightHalf, radius, mCirclePaint);
-
-        //#TODO yeah, yeah, yeah...
-        mTextPaint.setColor(labelColor);
-        mTextPaint.setTextAlign(Paint.Align.CENTER);
-        mTextPaint.setTextSize(50);
 
         //Draw the text!
         canvas.drawText(labelText, viewWidthHalf, viewHeightHalf, mTextPaint);

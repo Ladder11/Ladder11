@@ -1,4 +1,4 @@
-package com.ladder11.ladder11;
+package com.lader11.ladder11;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -12,12 +12,12 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.lader11.ladder11.R;
-
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
+//#TODO add a disconnect button
+//#TODO fix functionality for the text to speech so that it doesn't break onPause/onResume
 public class MainActivity extends AppCompatActivity implements TelemetryUpdates {
     private String TAG = "Ladder11MainActivity";
 
