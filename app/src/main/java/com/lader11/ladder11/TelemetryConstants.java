@@ -35,4 +35,24 @@ public class TelemetryConstants {
     static final byte STATUS_CALC_FLAME_LOC = 0x04;
     static final byte STATUS_EXT_FLAME = 0x05;
     static final byte STATUS_RETURN_HOME = 0x06;
+    static final byte STATUS_HOME = 0x07;
+
+    static final String STATUS_WAIT4START_STRING = "Wait for Start";
+    static final String STATUS_WALLFOLLOW_STRING = "Wall Following";
+    static final String STATUS_APPROACH_FLAME_STRING = "Approaching Flame";
+    static final String STATUS_CALC_FLAME_LOC_STRING = "Calculating Flame Location";
+    static final String STATUS_EXT_FLAME_STRING = "Extinguishing Flame";
+    static final String STATUS_RETURN_HOME_STRING = "Returning Home";
+    static final String STATUS_HOME_STRING = "Home";
+
+    static final byte SUBSTATUS_NONE = (byte) 0xFF;
+    static final byte SUBSTATUS_TOOFARFROMWALL = 0x01;
+    static final byte SUBSTATUS_TURNING_TO_CANDLE_POS = 0x02;
+    static final byte SUBSTATUS_DRIVING_TO_CANDLE = 0x03;
+    static final byte SUBSTATUS_WALLFOLLOW = 0x04;
+
+    static final String SUBSTATUS_TOOFARFROMWALL_STRING = "Too Far";
+    static final String SUBSTATUS_TURNING_TO_CANDLE_POS_STRING = "Turning";
+    static final String SUBSTATUS_DRIVING_TO_CANDLE_POS_STRING = "Driving";
+    static final String SUBSTATUS_WALLFOLLOW_STRING = "Normal";
 }
