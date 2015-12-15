@@ -19,6 +19,7 @@ import java.util.Set;
 import java.util.UUID;
 
 //#TODO add a disconnect button
+//#TODO add other display information
 public class MainActivity extends AppCompatActivity implements TelemetryUpdates {
     private String TAG = "Ladder11MainActivity";
 
@@ -214,10 +215,9 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates 
     @Override
     public void onRobotPoseUpdate(final float x, final float y, final float theta) {
         //addToTextView("Robot pose X: "+x+" Y: "+y+" Theta: "+theta);
-        Log.d(TAG, "Gyro Heading: "+(theta * -180.0 / Math.PI)+ "deg. Rad: "+theta);
         poseDisplay.post(new Runnable() {
             public void run() {
-                poseDisplay.setRobotPose(x, y, (float) (theta * -180.0 / Math.PI));
+                poseDisplay.setRobotPose(x, y, -theta);
             }
         });
     }
