@@ -61,10 +61,9 @@
         android:layout_margin="10dp"
         android:layout_below="@+id/stopButton"
         custom:circleColor="@color/colorPrimaryDark"
-        custom:textColor="@color/primaryText"
-        custom:circleLabel="Hello"
+        custom:textColor="@color/secondaryTextLight"
         custom:odoBubbleColor="@color/colorPrimary"
-        custom:gyroBubbleColor="@color/success"
+        custom:gyroBubbleColor="@color/colorPrimaryDark"
         />
 
 
