@@ -34,7 +34,7 @@ public class PoseDisplay extends View {
     private int gyroBubbleColor = 0x00FF00;
 
     private float odoHead = 0.0f;
-    private float gyroHead = 90.0f;
+    private float gyroHead = 5.0f;
     private float odoX;
     private float odoY;
     private float gyroX;
@@ -148,8 +148,8 @@ public class PoseDisplay extends View {
         canvas.drawText(labelGyroText, viewWidthHalf, labelGyroHeight, mTextPaint);
 
         //Draw the heading bubbles
-        canvas.drawCircle(gyroX, gyroY, bubbleSpace, mGyroPaint);
         canvas.drawCircle(odoX, odoY, bubbleSpace, mOdoPaint);
+        canvas.drawCircle(gyroX, gyroY, bubbleSpace, mGyroPaint);
     }
 
     public void setGyroHeading(float heading) {
