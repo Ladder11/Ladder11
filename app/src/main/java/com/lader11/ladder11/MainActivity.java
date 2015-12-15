@@ -54,6 +54,8 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates 
         textView.setText("");
         connectButton = (Button) findViewById(R.id.connectButton);
         connectButton.setEnabled(false);
+        //Ensure that the app doesn't go to sleep when the robot is connected
+        connectButton.setKeepScreenOn(true);
         startButton = (Button) findViewById(R.id.startButton);
         startButton.setEnabled(false);
         stopButton = (Button) findViewById(R.id.stopButton);
