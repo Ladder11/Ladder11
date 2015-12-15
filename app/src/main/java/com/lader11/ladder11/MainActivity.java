@@ -143,6 +143,9 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates{
     public void onSuccessfulConnect() {
         startButton.setEnabled(true);
         stopButton.setEnabled(true);
+        connectButton.setEnabled(false);
+        connectButton.setText("Connected");
+        connectButton.setTextColor(getResources().getColor(R.color.success));
     }
 
     /**
