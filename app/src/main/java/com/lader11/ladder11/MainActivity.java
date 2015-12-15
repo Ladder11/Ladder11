@@ -103,11 +103,17 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates 
 
     @Override
     protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        //Release the text to speech resource
         if(tts != null) {
             tts.stop();
             tts.shutdown();
         }
-        super.onPause();
+        super.onDestroy();
     }
 
     private void startBluetooth() {
