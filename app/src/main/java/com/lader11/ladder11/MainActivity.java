@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates 
     private Button startButton;
     private Button stopButton;
     private TextView statusText;
+    private TextView flameText;
     private PoseDisplay poseDisplay;
 
     private TextToSpeech tts;
@@ -61,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates 
         stopButton = (Button) findViewById(R.id.stopButton);
         stopButton.setEnabled(false);
         statusText = (TextView) findViewById(R.id.textStatus);
+        flameText = (TextView) findViewById(R.id.textFlame);
         poseDisplay = (PoseDisplay) findViewById(R.id.myPose);
         //Disables hardware acceleration for the pose display
         poseDisplay.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
@@ -227,12 +229,16 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates 
         addToTextView("Flame Location X: " + x + " Y: " + y + " Z: " + z);
         String st = "The flame is located at "+x+" inches in the x direction, "+
                      y+" inches in the y direction, and "+z+" inches from the ground.";
+        String stSiren = "Whee ooh Whee ooh Whee ooh Whee ooh Whee ooh Whee ooh Whee ooh Whee ooh Whee ooh Whee ooh Whee ooh Whee ooh Whee ooh Whee ooh Whee ooh Whee ooh Whee ooh Whee ooh Whee ooh Whee ooh";
         tts.speak(st, TextToSpeech.QUEUE_FLUSH, null);
+        tts.playSilence(2000, TextToSpeech.QUEUE_ADD, null);
+        tts.setSpeechRate(0.3f);
+        tts.speak(stSiren, TextToSpeech.QUEUE_ADD, null);
     }
 
     @Override
     public void onCameraDataUpdate(int x, int y, byte size) {
-        addToTextView("Camera Data X: "+x+" Y: "+y+" Size: "+size);
+        addToTextView("Camera Data X: " + x + " Y: " + y + " Size: " + size);
     }
 
     @Override
@@ -253,12 +259,59 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates 
 
     @Override
     public void onStatusUpdate(byte status, byte substatus) {
-        addToTextView("Status "+status+":"+substatus);
-        final byte fstatus = status;
-        final byte fsubstatus = substatus;
+        //addToTextView("Status "+status+":"+substatus);
+        final String statString;
+        final String subStatString;
+
+        switch(status) {
+            case TelemetryConstants.STATUS_WAIT4START:
+                statString = TelemetryConstants.STATUS_WAIT4START_STRING;
+                break;
+            case TelemetryConstants.STATUS_WALLFOLLOW:
+                statString = TelemetryConstants.STATUS_WALLFOLLOW_STRING;
+                break;
+            case TelemetryConstants.STATUS_APPROACH_FLAME:
+                statString = TelemetryConstants.STATUS_APPROACH_FLAME_STRING;
+                break;
+            case TelemetryConstants.STATUS_CALC_FLAME_LOC:
+                statString = TelemetryConstants.STATUS_CALC_FLAME_LOC_STRING;
+                break;
+            case TelemetryConstants.STATUS_EXT_FLAME:
+                statString = TelemetryConstants.STATUS_EXT_FLAME_STRING;
+                break;
+            case TelemetryConstants.STATUS_RETURN_HOME:
+                statString = TelemetryConstants.STATUS_RETURN_HOME_STRING;
+                break;
+            case TelemetryConstants.STATUS_HOME:
+                statString = TelemetryConstants.STATUS_HOME_STRING;
+                break;
+            default:
+                statString = Integer.toString(status);
+        }
+
+        switch(substatus) {
+            case TelemetryConstants.SUBSTATUS_NONE:
+                subStatString = "";
+                break;
+            case TelemetryConstants.SUBSTATUS_TOOFARFROMWALL:
+                subStatString = TelemetryConstants.SUBSTATUS_TOOFARFROMWALL_STRING;
+                break;
+            case TelemetryConstants.SUBSTATUS_TURNING_TO_CANDLE_POS:
+                subStatString = TelemetryConstants.SUBSTATUS_TURNING_TO_CANDLE_POS_STRING;
+                break;
+            case TelemetryConstants.SUBSTATUS_DRIVING_TO_CANDLE:
+                subStatString = TelemetryConstants.SUBSTATUS_DRIVING_TO_CANDLE_POS_STRING;
+                break;
+            case TelemetryConstants.SUBSTATUS_WALLFOLLOW:
+                subStatString = TelemetryConstants.SUBSTATUS_WALLFOLLOW_STRING;
+                break;
+            default:
+                subStatString = Integer.toString(substatus);
+        }
+
         statusText.post(new Runnable() {
             public void run() {
-                statusText.setText("Status: " + fstatus + ": " + fsubstatus);
+                statusText.setText("Status: " + statString + ": " + subStatString);
             }
         });
     }
