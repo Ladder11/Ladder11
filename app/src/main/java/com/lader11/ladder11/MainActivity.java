@@ -139,17 +139,26 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates 
     }
 
     public void connectToRobot(View view) {
+        connectButton.setText("Connecting...");
+        connectButton.setEnabled(false);
         //Get the list of already paired devices
         Set<BluetoothDevice> pairedDevices = btAdapter.getBondedDevices();
         //If there are devices paired, print them out
         if(pairedDevices.size() > 0) {
             for(BluetoothDevice device : pairedDevices) {
                 Log.d(TAG, "Device: "+device.getName()+" Address: "+device.getAddress());
-                //Toast.makeText(this, "Paired to: "+device.getName()+"/n"+device.getAddress(), Toast.LENGTH_SHORT).show();
+                //Search for the robot by bluetooth name
                 if(device.getName().equals("BT_01")) {
                     Toast.makeText(this, "Found robot", Toast.LENGTH_SHORT).show();
                     //Attempt a connection only when the device is found;
-                    robotTelemetry.connectToDevice(device);
+                    final BluetoothDevice dev = device;
+                    new Thread(new Runnable() {
+                        public void run() {
+                            robotTelemetry.connectToDevice(dev);
+                        }
+                    }).start();
+                    //Already found the device, so don't need to keep searching
+                    break;
                 }
             }
         }
@@ -159,11 +168,29 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates 
      * Only enable robot communication buttons when the robot has succesfully connected
      */
     public void onSuccessfulConnect() {
-        startButton.setEnabled(true);
-        stopButton.setEnabled(true);
-        connectButton.setEnabled(false);
-        connectButton.setText("Connected");
-        connectButton.setTextColor(getResources().getColor(R.color.success));
+        this.runOnUiThread(new Runnable() {
+            public void run() {
+                startButton.setEnabled(true);
+                stopButton.setEnabled(true);
+                connectButton.setEnabled(false);
+                connectButton.setText("Connected");
+                connectButton.setTextColor(getResources().getColor(R.color.success));
+            }
+        });
+    }
+
+    /**
+     * Shows a simple message that the connection failed
+     */
+    public void onFailedConnect() {
+        this.runOnUiThread(new Runnable() {
+            public void run() {
+                Toast.makeText(MainActivity.this, "Failed to connect to robot", Toast.LENGTH_SHORT).show();
+                //Reset the connect button
+                connectButton.setText("Connect");
+                connectButton.setEnabled(true);
+            }
+        });
     }
 
     /**
