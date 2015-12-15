@@ -21,15 +21,13 @@
         android:layout_height="wrap_content"
         android:text="New Text"
         android:id="@+id/textStatus"
-        android:layout_below="@+id/connectButton"
-        android:layout_toEndOf="@+id/view" />
+        android:layout_below="@+id/connectButton" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="New Text"
         android:id="@+id/textView"
-        android:textColor="@color/white"
         android:layout_below="@+id/stopButton"
         android:layout_alignParentStart="true" />
 
