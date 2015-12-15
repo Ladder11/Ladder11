@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates{
     private Button connectButton;
     private Button startButton;
     private Button stopButton;
+    private TextView statusText;
 
     private TextToSpeech tts;
 
@@ -52,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates{
         startButton.setEnabled(false);
         stopButton = (Button) findViewById(R.id.stopButton);
         stopButton.setEnabled(false);
+        statusText = (TextView) findViewById(R.id.textStatus);
 
         robotTelemetry = new RobotTelemetry();
         robotTelemetry.registerListener(this);
@@ -199,6 +201,13 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates{
     @Override
     public void onStatusUpdate(byte status, byte substatus) {
         addToTextView("Status "+status+":"+substatus);
+        final byte fstatus = status;
+        final byte fsubstatus = substatus;
+        statusText.post(new Runnable() {
+            public void run() {
+                statusText.setText("Status: "+fstatus+": "+fsubstatus);
+            }
+        });
     }
 
     @Override
