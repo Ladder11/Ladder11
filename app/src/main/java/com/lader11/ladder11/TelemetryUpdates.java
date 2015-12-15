@@ -5,6 +5,7 @@ package com.lader11.ladder11;
  */
 public interface TelemetryUpdates {
     void onSuccessfulConnect();
+    void onFailedConnect();
     void onRobotPoseUpdate(float x, float y, float theta);
     void onFlameLocationUpdate(float x, float y, float z);
     void onCameraDataUpdate(int x, int y, byte size);
