@@ -12,10 +12,7 @@ import com.lader11.ladder11.R;
 /**
  * Created by jordanbrobots on 12/14/15.
  */
-//#TODO make things look a little nicer
-//#TODO make the text fit inside the circle
-//#TODO change the circle to an outline
-//#TODO change the gyro bubble to outline, and layer on top
+//#TODO possibly set text widths so that things line up?
 public class PoseDisplay extends View {
     private Paint mTextPaint;
     private Paint mCirclePaint;
@@ -25,13 +22,13 @@ public class PoseDisplay extends View {
     private int circleColor = 0xFF0000;     //Default to red
     private int labelColor = 0x000000;      //Default to black
     private String labelText = "";  //Default to empty
-    private String labelXText = "X: 000.00\"";
+    private String labelXText = "X: 0.0\"";
     private float labelXHeight;
-    private String labelYText = "Y: 000.00\"";
+    private String labelYText = "Y: 0.0\"";
     private float labelYHeight;
-    private String labelOdoText = "Head: 345.67\u00b0";
+    private String labelOdoText = "Head: 0.0\u00b0";
     private float labelOdoHeight;
-    private String labelGyroText = "Gyro: 234.57\u00b0";
+    private String labelGyroText = "Gyro: 0.0\u00b0";
     private float labelGyroHeight;
     private int odoBubbleColor = 0xFF0000;
     private int gyroBubbleColor = 0x00FF00;
