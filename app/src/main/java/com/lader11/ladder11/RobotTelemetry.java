@@ -39,6 +39,7 @@ public class RobotTelemetry {
     void registerListener(TelemetryUpdates item) {
         listeners.add(item);
     }
+
     public void connectToDevice(BluetoothDevice btDevice) {
         if(btDevice == null) {
             Log.e(TAG, "Cannot connect to a null device");
@@ -64,19 +65,24 @@ public class RobotTelemetry {
                 btSocket.close();
             } catch (IOException e2)  {
                 Log.e(TAG, "Unable to close the socket during connection failure");
+                return;
             }
+            return;
         }
 
         //Create the data streams to start communicating with the device
         try {
             outStream = btSocket.getOutputStream();
             inStream = btSocket.getInputStream();
-            readThread.start();
-            for(TelemetryUpdates item: listeners) {
-                item.onSuccessfulConnect();
-            }
         } catch (IOException e) {
             Log.e(TAG, "Unable to get input and output streams: "+e.getMessage(), e);
+            return;
+        }
+
+        //Everything has succeeded, so start the read thread, and notify listeners
+        readThread.start();
+        for(TelemetryUpdates item: listeners) {
+            item.onSuccessfulConnect();
         }
         Log.d(TAG, "Connected to Robot");
         //Toast.makeText(this, "Connected to Robot", Toast.LENGTH_SHORT);
