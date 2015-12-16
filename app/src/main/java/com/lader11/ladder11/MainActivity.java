@@ -43,9 +43,11 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates 
     private Button stopButton;
     private TextView statusText;
     private TextView flameText;
+    private TextView distText;
     private PoseDisplay poseDisplay;
 
     private TextToSpeech tts;
+    private boolean comingHome = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates 
         stopButton.setEnabled(false);
         statusText = (TextView) findViewById(R.id.textStatus);
         flameText = (TextView) findViewById(R.id.textFlame);
+        distText = (TextView) findViewById(R.id.textDistance);
         poseDisplay = (PoseDisplay) findViewById(R.id.myPose);
         //Disables hardware acceleration for the pose display
         poseDisplay.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
@@ -222,11 +225,26 @@ public class MainActivity extends AppCompatActivity implements TelemetryUpdates 
                 poseDisplay.setRobotPose(x, y, -theta);
             }
         });
+
+        if(comingHome) {
+            final float dist = (float) Math.sqrt((x*x) + (y*y));
+            distText.post(new Runnable() {
+               public void run() {
+                   distText.setText(String.format("Distance: %.2f", dist));
+               }
+            });
+        }
     }
 
     @Override
-    public void onFlameLocationUpdate(float x, float y, float z) {
-        addToTextView("Flame Location X: " + x + " Y: " + y + " Z: " + z);
+    public void onFlameLocationUpdate(final float x, final float y, final float z) {
+        comingHome = true;
+
+        flameText.post(new Runnable() {
+            public void run() {
+                flameText.setText("Flame X: " + x + " Y: " + y + " Z: " + z);
+            }
+        });
         String st = "The flame is located at "+x+" inches in the x direction, "+
                      y+" inches in the y direction, and "+z+" inches from the ground.";
         String stSiren = "Whee ooh Whee ooh Whee ooh Whee ooh Whee ooh Whee ooh Whee ooh Whee ooh Whee ooh Whee ooh Whee ooh Whee ooh Whee ooh Whee ooh Whee ooh Whee ooh Whee ooh Whee ooh Whee ooh Whee ooh";
