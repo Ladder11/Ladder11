@@ -23,7 +23,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Status: x:y"
+        android:text="Status:"
         android:id="@+id/textStatus"
         android:layout_below="@id/connectButton" />
 
@@ -33,6 +33,13 @@
         android:text=""
         android:id="@+id/textFlame"
         android:layout_below="@id/textStatus"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:id="@+id/textDistance"
+        android:layout_below="@id/textFlame"/>
 
     <Button
         android:layout_width="wrap_content"
